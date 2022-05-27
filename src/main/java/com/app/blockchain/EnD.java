@@ -33,8 +33,6 @@ public class EnD {
 
         String publicKeyString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
 
-        System.out.println("public key = "+ publicKeyString);
-
         PrivateKey privateKey = pair.getPrivate();
 
         String privateKeyString = Base64.getEncoder().encodeToString(privateKey.getEncoded());

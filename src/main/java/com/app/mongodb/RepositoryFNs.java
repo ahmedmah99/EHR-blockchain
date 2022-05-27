@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RepositoryFNs {
     public static void main(String[] args){
@@ -24,7 +25,7 @@ public class RepositoryFNs {
     public static String insertClinic(String collectionName, String privateKey,String PublicKey,
                                       String clinicSymetricKey, String password){
 
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 //        db.createCollection(collectionName);
         MongoCollection<Document> col = db.getCollection(collectionName);
@@ -38,15 +39,26 @@ public class RepositoryFNs {
 
     }
 
-    public static ArrayList<Document> getBlockChain(){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+    public static void getBlockChain(){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 
         MongoCollection<Document> col = db.getCollection("Blocks");
-        return col.find().into(new ArrayList<>());
+        FindIterable<Document> blocks =  col.find();
+
+        MongoCursor<Document> cursor = blocks.iterator(); // (2)
+        try {
+            while(cursor.hasNext()) {
+                System.out.println(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
     }
+
+
     public static String getPrevHash(){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 //        db.createCollection(collectionName);
         MongoCollection<Document> col = db.getCollection("Blocks");
@@ -55,12 +67,12 @@ public class RepositoryFNs {
         return temp.get(0).getString("prevHash");
     }
     public static void insertcol(String colName){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
         db.createCollection(colName);
     }
     public static HashMap<String,String> getCAClinicKeys(String clinicID){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 //        db.createCollection(collectionName);
         MongoCollection<Document> col = db.getCollection("Clinics");
@@ -72,7 +84,7 @@ public class RepositoryFNs {
         return res;
     }
     public static HashMap<String,String> getPrivClinicKeys(String clinicID){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 //        db.createCollection(collectionName);
         MongoCollection<Document> col = db.getCollection("Clinics");
@@ -82,44 +94,62 @@ public class RepositoryFNs {
         res.put("clinicSymKey",d.getString("clinicSymKey"));
         return res;
     }
-    public static String getPrevBlockID(String patientID){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
-        MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
-//        db.createCollection(collectionName);
-        MongoCollection<Document> col = db.getCollection("Blocks");
-        ArrayList<Document> temp = col.find(new Document("patientID", patientID)).into(new ArrayList<Document>());
-        if(temp.size()==0){
-            return  null;
-        }
-        else{
-            return ""+ temp.get(temp.size()-1).getObjectId("_id");
-        }
-    }
 
     //not finished
     public static String insertBlock(Block b){
 
         //previousHash, String clinicID,int patientID, String hash, String data, String prevBlockID, int nonce, timestamp
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 //        db.createCollection(collectionName);
         MongoCollection<Document> col = db.getCollection("Blocks");
         ObjectId ObjectID = new ObjectId();
         Document doc = new Document("_id",ObjectID).append("previousHash",b.previousHash).append("clinicID",b.clinicID).
                 append("patientID",b.patientID).append("hash",b.hash).append("data",b.data).
-                append("prevBlockID",b.prevBlockID).append("nonce",b.nonce).append("timestamp",b.timeStamp);
+                append("nonce",b.nonce).append("timestamp",b.timeStamp);
         col.insertOne(doc);
 
 
         return String.valueOf(ObjectID);
     }
     public static boolean authorizeClinic(String clinicID,String password){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://Miand:1234@cluster0.1iaxn.mongodb.net/?retryWrites=true&w=majority");
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
 //        db.createCollection(collectionName);
         MongoCollection<Document> col = db.getCollection("Clinics");
-        Document filter = new Document("_id", new ObjectId(clinicID)).append("password",password);
-        Document d = col.find(filter).first();
-        return d!=null;
+
+        try {
+            Document filter = new Document("_id", new ObjectId(clinicID)).append("password",password);
+            Document d = col.find(filter).first();
+            return d!=null;
+        }
+
+        catch (Exception e){
+            System.out.printf("Invalid Credentials, Wrong ID or Password");
+        }
+        return false;
     }
+
+    /**
+     * View the Transactions done by specific patient
+     * @param patientID is the patientID in each block
+     */
+    public static void viewPatientTx(String patientID){
+        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
+        MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
+        MongoCollection<Document> col = db.getCollection("Blocks");
+        FindIterable<Document> docs= col.find(new Document("patientID", patientID),Document.class);
+
+        MongoCursor<Document> cursor = docs.iterator(); // (2)
+        try {
+            System.out.println("VIEWING ");
+            while(cursor.hasNext()) {
+                System.out.println(cursor.next());
+            }
+        } finally {
+            cursor.close();
+        }
+
+    }
+
 }

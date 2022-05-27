@@ -21,7 +21,7 @@ public class Block {
 
 	public String hash;
 	  	public int patientID;
-	public int blockID;
+	public String blockID;
 
 	  	//visitInfo;patientInfo;visitInfo;patient;patientInfo;
 		public String previousHash;
@@ -32,13 +32,10 @@ public class Block {
 	public int nonce;
 	public String clinicID;
 
-	public String prevBlockID;
-
-
 
 
 	//
-	    public void Block(VisitInfo visitInfo, PatientInfo patientInfo, String previousHash, String clinicID,int patientID) {
+	    public Block(VisitInfo visitInfo, PatientInfo patientInfo, String clinicID,int patientID) {
 	    		this.visitInfo = visitInfo;
 	    		this.patientInfo = patientInfo;
 				if(patientInfo==null){
@@ -47,7 +44,6 @@ public class Block {
 				else{
 					this.data = this.visitInfo + ";" + this.patientInfo;
 				}
-	        this.previousHash = previousHash;
 	        this.patientID = patientID;
 	        this.hash = calculateBlockHash();
 	        this.clinicID = clinicID;
@@ -55,11 +51,8 @@ public class Block {
 
 		public void insertBlockIntoDB(){
 //			Check patient has previous data
-			String prevBlock = RepositoryFNs.getPrevBlockID(this.patientID+"");
-			this.prevBlockID = prevBlock;
 
-			String prevHash = RepositoryFNs.getPrevHash();
-			this.previousHash=prevHash;
+			this.previousHash= RepositoryFNs.getPrevHash();
 
 			HashMap<String,String> keys = RepositoryFNs.getPrivClinicKeys(this.clinicID);
 			//Encrypt
@@ -78,7 +71,7 @@ public class Block {
 				mineBlock(3);
 				if(verifyBlock(3)){
 					//Add to DB
-					RepositoryFNs.insertBlock(this);
+					this.blockID = RepositoryFNs.insertBlock(this);
 				}
 				else{
 					System.out.println("Invalid Block");
@@ -105,12 +98,12 @@ public class Block {
 			String data = decDataAll.substring(64);
 			String hashed= sha(hashPassed);
 			if(hashed.equals(hashPassed)){
-				String decData = EnD.AESdecrypt(data,clinicKeys.get("clinicSymKey"));
-				if(decData==null){
+				String decryptedData = EnD.AESdecrypt(data,clinicKeys.get("clinicSymKey"));
+				if(decryptedData==null){
 					return false;
 				}
 				else{
-					String[] splitted = decData.split(";");
+					String[] splitted = decryptedData.split(";");
 					if(splitted.length==2){
 						String patientInfo = splitted[1];
 						String[] patientInfoSplit = patientInfo.split(",");
@@ -188,7 +181,6 @@ public class Block {
 
 
 		public String sha(String data){
-			String dataToHash = data;
 			MessageDigest digest = null;
 			byte[] bytes = null;
 			Logger logger
@@ -196,7 +188,7 @@ public class Block {
 					Block.class.getName());
 			try {
 				digest = MessageDigest.getInstance("SHA-256");
-				bytes = digest.digest(dataToHash.getBytes(StandardCharsets.UTF_8));
+				bytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));
 			} catch (NoSuchAlgorithmException ex) {
 				logger.log(Level.SEVERE, ex.getMessage());
 			}
@@ -236,7 +228,7 @@ public class Block {
 	        }
 			System.out.println(buffer.toString());
 	        return buffer.toString();
-
+//
 	    }
 
 	    ////////////////////////////////////////////////////////////////////////////////////////////
