@@ -10,9 +10,9 @@ public class PatientInfo {
 	int oxygen;
 	@Override
 	public String toString() {
-		return "PatientInfo:name=" + name + ", id=" + id + ", age=" + age + ", weight=" + weight + ", height=" + height
-				+ ", sex=" + sex + ", oxygen=" + oxygen;
+		return name + "," + id + "," + age + "," + weight + "," + height + "," + sex + "," + oxygen;
 	}
+
 	public PatientInfo(String name, int id, int age, float weight, float height, Sex sex, int oxygen) {
 		super();
 		this.name = name;
@@ -23,7 +23,8 @@ public class PatientInfo {
 		this.sex = sex;
 		this.oxygen = oxygen;
 	}
-	
-	
 
+	public int getId() {
+		return id;
+	}
 }

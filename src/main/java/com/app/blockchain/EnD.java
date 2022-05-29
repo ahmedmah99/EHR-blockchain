@@ -6,12 +6,16 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EnD {
     private static final String initVector = "encryptionIntVec";
@@ -25,7 +29,7 @@ public class EnD {
         keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         SecureRandom secureRandom = new SecureRandom();
 
-        keyPairGenerator.initialize(2048,secureRandom);
+        keyPairGenerator.initialize(4096,secureRandom);
 
         KeyPair pair = keyPairGenerator.generateKeyPair();
 
@@ -81,33 +85,34 @@ public class EnD {
     public static String rsaEncrypt(String privateKey, String message) throws
             NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
-        Cipher encryptionCipher = Cipher.getInstance("RSA");
-        byte[] publicBytes = Base64.getDecoder().decode(privateKey);
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+        byte[] privateBytes = Base64.getDecoder().decode(privateKey.getBytes());
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
         PrivateKey privKey;
         try {
             privKey = keyFactory.generatePrivate(keySpec);
         } catch (InvalidKeySpecException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
-        encryptionCipher.init(Cipher.ENCRYPT_MODE,privKey);
 
-        byte[] encryptedMessage =
-                encryptionCipher.doFinal(message.getBytes());
+        Cipher encryptCipher = Cipher.getInstance("RSA");
+        encryptCipher.init(Cipher.ENCRYPT_MODE,privKey);
+        byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+        //System.out.println("message bytes string" + Base64.getEncoder().encodeToString(messageBytes));
+        byte[] encryptedMessage = encryptCipher.doFinal(messageBytes);
 
-        String encryption = Base64.getEncoder().encodeToString(encryptedMessage);
-        return encryption;
+        return Base64.getEncoder().encodeToString(encryptedMessage);
 
     }
     public static String rsaDecrypt(String publicKey, String cipherText) throws
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
 
-        byte[] encryptedMessage =Base64.getDecoder().decode(cipherText.getBytes());
+        byte[] encryptedMessage =Base64.getDecoder().decode(cipherText);
 
-        byte[] publicBytes = Base64.getDecoder().decode(publicKey);
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+        byte[] publicBytes = Base64.getDecoder().decode(publicKey.getBytes());
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
         PublicKey pubKey;
         try {
             pubKey = keyFactory.generatePublic(keySpec);
@@ -120,7 +125,24 @@ public class EnD {
         decryptionCipher.init(Cipher.DECRYPT_MODE,pubKey);
         byte[] decryptedMessage = decryptionCipher.doFinal(encryptedMessage);
 
-        String decryption = new String(decryptedMessage);
-        return decryption;
+        return new String(decryptedMessage,StandardCharsets.UTF_8);
     }
+
+    public static String sha256(String data){
+        MessageDigest digest = null;
+        byte[] bytes = null;
+        Logger logger = Logger.getLogger(Block.class.getName());
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            bytes = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException ex) {
+            logger.log(Level.SEVERE, ex.getMessage());
+        }
+        StringBuilder buffer = new StringBuilder();
+        for (byte b : bytes)
+            buffer.append(String.format("%02x", b));
+
+        return buffer.toString();
+    }
+
 }

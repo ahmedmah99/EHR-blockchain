@@ -1,5 +1,6 @@
 package com.app.blockchain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -9,16 +10,18 @@ public class VisitInfo {
 	float temperature;
 	Reason reason;
 	String diagnosis;
+
 	Medication[] prescription;
 	String referral_specialist;
 	Date date;
 	String labTest;
 	boolean isLabtest;
+
+	//OXYGEN,TEMPERATURE,REASON,DIAGNOSIS,PRESCRIPTION,ReferralSpecialist,DATE,LabTest,isLabTest
 	@Override
 	public String toString() {
-		return "VisitInfo [oxygen=" + oxygen + ", temperature=" + temperature + ", reason=" + reason + ", diagnosis="
-				+ diagnosis + ", prescription=" + Arrays.toString(prescription) + ", referral_specialist="
-				+ referral_specialist + ", date=" + date + ", labTest=" + labTest + ", isLabtest=" + isLabtest + "]";
+		return oxygen +","+ temperature + "," + reason + "," + diagnosis + "," + Arrays.toString(prescription) + ","
+				+ referral_specialist + "," + date.getTime() + "," + labTest + "," + isLabtest;
 	}
 	public VisitInfo(int oxygen, float temperature, Reason reason, String diagnosis, Medication[] prescription,
 			String referral_specialist, Date date, String labTest, boolean isLabtest) {
