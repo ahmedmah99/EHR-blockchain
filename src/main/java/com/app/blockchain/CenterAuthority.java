@@ -11,6 +11,8 @@ import java.util.Scanner;
 public class CenterAuthority {
 
     Simulator simulator;
+
+    String password = "c123";
     public CenterAuthority(Simulator simulator){this.simulator = simulator;}
     public boolean centerAuthority(String encData,String clinicID){
         //decrypts whole data using public key of clinic
@@ -198,5 +200,9 @@ public class CenterAuthority {
             centerAuthorityViewPatient(patientId);
         }
         else System.out.println("Wrong number, try again");
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

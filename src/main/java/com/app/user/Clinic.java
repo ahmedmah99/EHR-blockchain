@@ -90,12 +90,7 @@ public class Clinic {
                 String setByClinicId = (history != null ? history[0] : null);
                 String lastVisitBlockHash = (history != null ? history[1] : null);
 
-                if (setByClinicId!= null && !Objects.equals(setByClinicId, this.clinicID)) {
-                    System.out.println("This clinic can not insert this patient with id "+ id);
-                    break;
-                }
-
-                if (setByClinicId == null) {
+                if (setByClinicId == null || !Objects.equals(setByClinicId,this.clinicID)) {
                     do {
                         System.out.println("Patient Info?  (Name # Age # Weight # Height # Sex # Oxygen )");
                         sc = new Scanner(System.in);

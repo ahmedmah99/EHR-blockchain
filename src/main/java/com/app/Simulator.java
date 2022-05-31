@@ -1,60 +1,68 @@
 package com.app;
-
-import com.app.blockchain.Block;
 import com.app.blockchain.Blockchain;
 import com.app.blockchain.CenterAuthority;
 import com.app.mongodb.RepositoryFNs;
 import com.app.user.Clinic;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
-import com.sun.tools.jconsole.JConsoleContext;
 import org.bson.Document;
-import org.bson.types.ObjectId;
-
-import java.io.Console;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 import java.util.Scanner;
 
 public class Simulator {
 
+    //the existing clinics in the system
     Hashtable<String,Clinic> existingClinics;
+
+    //the blockchain object
     Blockchain blockchain = new Blockchain(this);
+
+    //the Certificate/Authority Center
     CenterAuthority centerAuthority = new CenterAuthority(this);
+
 
     public Simulator(){
         existingClinics = new Hashtable<>();
-        clinicsInit();
-
-        //clinics();
+        //clinicsInit();
+        clinics();
     }
 
     public void run() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
 
+        //draw some ASCII ART at the beginning of the application :)
         ASCIIStart();
+
+        //take an input from the user, [1 -> continue as a User] [2 -> continue as the COA] [ -1 to Exit the application]
         Scanner sc = new Scanner(System.in);
         while(true)
         {
-            System.out.println("Enter [ 1 to continue as Clinic] [2 to continue as the Center Authority] OR  -1 to Exit");
+            System.out.println("Press:  [ 1 -> to continue as Clinic] [ 2 -> to continue as the Center Authority ] OR  [ -1 -> to EXIT]");
             int x = sc.nextInt();
             if(x == -1)
                 break;
 
             else if(x == 2){
 
-                while(true){
-                    System.out.println(" WELCOME TO THE AUTHORITY CENTER \n Enter '2' to continue, -1 to sign out");
-                    int choice = sc.nextInt();
-                    if(choice == -1)
-                        break;
-                    else if(choice == 2){
-                        AuthorityFunctions();
-                        int cNum = sc.nextInt();
-                        centerAuthority.execute(cNum);
+                System.out.println("Enter the CENTER AUTHORITY password to continue");
+                String CenterAuthorityPassword = sc.next();
+
+                if(CenterAuthorityPassword.equals(centerAuthority.getPassword())) {
+                    while (true) {
+                        System.out.println(" ###########  WELCOME TO THE AUTHORITY CENTER ########## \n Press: [2 -> to continue ] OR [-1 -> to SIGN OUT]");
+                        int choice = sc.nextInt();
+                        if (choice == -1)
+                            break;
+                        else if (choice == 2) {
+                            AuthorityFunctions();
+                            int cNum = sc.nextInt();
+                            centerAuthority.execute(cNum);
+                        } else
+                            System.out.println("TRY AGAIN");
                     }
-                    else
-                        System.out.println("Wrong number, TRY AGAIN");
                 }
+                else
+                    System.out.println("Invalid password, enter the right password to continue");
 
             }
             else if (x == 1) {
@@ -63,7 +71,7 @@ public class Simulator {
                 if(clinicAuth != null){
 
                     while(true){
-                        System.out.println(" ------ AUTHORIZED CLINIC ------ \n Enter '2' to continue, -1 to sign out");
+                        System.out.println(" ###########  AUTHORIZED CLINIC ##########  \n Press: [2 -> to continue ] OR [-1 -> to SIGN OUT]");
                         int choice = sc.nextInt();
                         if(choice == -1)
                             break;
@@ -73,11 +81,13 @@ public class Simulator {
                             clinicAuth.execute(cNum);
                         }
                         else
-                            System.out.println("Wrong number, TRY AGAIN");
+                            System.out.println("TRY AGAIN");
                     }
                 }
             }
         }
+
+        //another ASCII Art at the very end of the application execution :)
         ASCIIEnd();
     }
 
@@ -115,6 +125,8 @@ public class Simulator {
         existingClinics.put("123",new Clinic("123",this));
         existingClinics.put("a123",new Clinic("a123",this));
         existingClinics.put("b123",new Clinic("b123",this));
+        existingClinics.put("c123",new Clinic("c123",this));
+        existingClinics.put("d123",new Clinic("d123",this));
     }
 
     public Blockchain getBlockchain() {return blockchain;}
@@ -139,42 +151,35 @@ public class Simulator {
 
     private void ASCIIStart(){
         String art = """
-                                                                                  _.._                                                  
-                                                                             .--'` .-,)
-                                                                           .'     /
-                                                            ,             /      /
-                                                           /\\            ;      ;
-                                                           | `.__..__    |      |
-                                                           |         `''-\\      ;
-                                                            \\             `      \\
-                                                             '.                   `.
-                                                               '--.,__   __..-'-.   '.\s
-                                                                      ```        `.   '.
-                                                                                   `.   `\\
-                                                                   _.._              \\    `\\
-                                                                _.'    '-._ .__       |     `\\                                             
-                                                              .'/        .-'   `\\     |       \\
-                                                            .'  :           .-.  |    /        \\
-                                                  _        /     \\         /_  | /_..-`"-.     ;
-                                                 / '.     |  .    )  .-')_/` \\.'`         \\    |
-                                                ;    \\    /_.'  .'_.' .-. .-./       .--._/    ;
-                                                |   _ '-'`      ` /  /o )(o (       (   __    /
-                                                ;  ( '           ///     _) |'.      `'`  `'-;
-                                                 \\  `   _       ////  ,__   /  `,            _)
-                                                  '. ' ( `--.__.\\  '.  `"` /              .-'
-                                                    '.  '      .-)  /-.__.'`-.  (     .  /
-                                                      \\  ' __.' /  /          \\  '---'  |
-                                                       `-.'-=\\.'  /     _._\\   \\        /
-                                                         '===/   /`'._.'   _\\_  \\-.__.-'
-                                                            `|   /`-...--'''      |
-                                                            \\__/`-._       __.-'`
-                                                                    `""\"""`
+                 _______   ___  ___  ________          ________  ___       ________  ________  ___  __    ________  ___  ___  ________  ___  ________     \s
+                |\\  ___ \\ |\\  \\|\\  \\|\\   __  \\        |\\   __  \\|\\  \\     |\\   __  \\|\\   ____\\|\\  \\|\\  \\ |\\   ____\\|\\  \\|\\  \\|\\   __  \\|\\  \\|\\   ___  \\   \s
+                \\ \\   __/|\\ \\  \\\\\\  \\ \\  \\|\\  \\       \\ \\  \\|\\ /\\ \\  \\    \\ \\  \\|\\  \\ \\  \\___|\\ \\  \\/  /|\\ \\  \\___|\\ \\  \\\\\\  \\ \\  \\|\\  \\ \\  \\ \\  \\\\ \\  \\  \s
+                 \\ \\  \\_|/_\\ \\   __  \\ \\   _  _\\       \\ \\   __  \\ \\  \\    \\ \\  \\\\\\  \\ \\  \\    \\ \\   ___  \\ \\  \\    \\ \\   __  \\ \\   __  \\ \\  \\ \\  \\\\ \\  \\ \s
+                  \\ \\  \\_|\\ \\ \\  \\ \\  \\ \\  \\\\  \\|       \\ \\  \\|\\  \\ \\  \\____\\ \\  \\\\\\  \\ \\  \\____\\ \\  \\\\ \\  \\ \\  \\____\\ \\  \\ \\  \\ \\  \\ \\  \\ \\  \\ \\  \\\\ \\  \\\s
+                   \\ \\_______\\ \\__\\ \\__\\ \\__\\\\ _\\        \\ \\_______\\ \\_______\\ \\_______\\ \\_______\\ \\__\\\\ \\__\\ \\_______\\ \\__\\ \\__\\ \\__\\ \\__\\ \\__\\ \\__\\\\ \\__\\
+                    \\|_______|\\|__|\\|__|\\|__|\\|__|        \\|_______|\\|_______|\\|_______|\\|_______|\\|__| \\|__|\\|_______|\\|__|\\|__|\\|__|\\|__|\\|__|\\|__| \\|__|
+                                                                                                                                                          \s
+                                                                                                                                                          \s
+                                                                                                                                                          \s
+                """;
+
+        String art1 = """
+                      |________|___________________|_
+                      |        | | | | | | | | | | | |________________
+                      |________|___________________|_|                ,
+                      |        |                   |                  ,
+                                
+                                
                 """;
 
         for(int i = 0; i < art.length(); i++){
             System.out.print(art.charAt(i));
         }
 
+
+        for(int i = 0; i < art1.length(); i++){
+            System.out.print(art1.charAt(i));
+        }
     }
 
     public void ASCIIEnd(){
@@ -214,8 +219,5 @@ public class Simulator {
             System.out.print(art.charAt(i));
         }
     }
-
-
-
 
 }

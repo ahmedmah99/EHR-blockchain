@@ -139,7 +139,7 @@ public class RepositoryFNs {
         }
 
         catch (Exception e){
-            System.out.printf(" ,Invalid Credentials, Wrong ID or Password");
+            System.out.print(" , Invalid Credentials, Wrong ID or Password");
         }
         return false;
     }

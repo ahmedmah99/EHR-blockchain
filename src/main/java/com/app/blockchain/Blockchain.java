@@ -14,6 +14,7 @@ public class Blockchain {
      private String lastHash;
     //List<Block> blockchain1 = new ArrayList<>();
 
+    //the simulation of the blockchain is hashmap, where the key is the hash of the block and value is a block object
     HashMap<String,Block> blockchain = new HashMap<String,Block>();
 
     public Blockchain(Simulator simulator){
@@ -45,7 +46,7 @@ public class Blockchain {
 
 
     /**
-     * view the blockchain
+     * view the blockchain by traversing the blockchain from the last block to the previous ones
      */
     public void viewBlockchain(){
 
@@ -67,7 +68,6 @@ public class Blockchain {
             b = blockchain.get(b.previousHash);
         }
         System.out.println("                                                                          Genesis Block");
-
     }
 
     /**
@@ -161,8 +161,11 @@ public class Blockchain {
             System.out.println("Data rejected by the center authority");
     }
 
+
     /**
-     * get the has of the previous visit
+     * this function  return the clinicId of the last clinic that inserted a specific patient in the blockchain
+     * @param patientID is the patientId inquired about
+     * @return and array contains the clinicId and a hash of the block of the last visit
      */
     public String[] getLastVisitClinicId(int patientID){
 
@@ -183,9 +186,18 @@ public class Blockchain {
         return new String[]{clinicID,LastVisitHash};
     }
 
+
+    /**
+     * get the hash of the last block in the blockchain
+     * @return the hash as 64-bit String
+     */
     public String getLastHash() {
         return lastHash;
     }
 
+    /**
+     * getter of the blockchain hashmap
+     * @return Hashmap representing the blockchain
+     */
     public HashMap<String, Block> getBlockchain() {return blockchain;}
 }
