@@ -2,10 +2,7 @@ package com.app.blockchain;
 
 import com.app.Simulator;
 import com.app.mongodb.RepositoryFNs;
-import com.app.user.Clinic;
-
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Scanner;
 
 public class CenterAuthority {
@@ -30,7 +27,6 @@ public class CenterAuthority {
             System.out.println(" Encrypted Data: " + encData);
             System.out.println("PublicKey " + clinicKeys.get("publicKey"));
             System.out.println(e.getMessage());
-            ;
         }
         String hashPassed = decDataAll.substring(0, 64);
         String dataEncrypted = decDataAll.substring(64);

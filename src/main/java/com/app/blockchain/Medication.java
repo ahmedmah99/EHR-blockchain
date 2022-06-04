@@ -1,15 +1,15 @@
 package com.app.blockchain;
 
 public class Medication {
-    int dose;
+    String medicine;
     int intake_period;
 
-    public Medication(int dose, int intake_period){
-        this.dose = dose;
+    public Medication(String medicine, int intake_period){
+        this.medicine = medicine;
         this.intake_period = intake_period;
     }
     @Override
     public String toString() {
-        return dose +","+ intake_period;
+        return medicine +","+ intake_period;
     }
 }

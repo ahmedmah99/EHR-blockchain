@@ -81,7 +81,7 @@ public class Clinic {
                 PatientInfo patientInfo = null;
 
                 Scanner sc = new Scanner(System.in);
-                System.out.println("Enter your ID");
+                System.out.println("Enter Patient ID");
                 int id = sc.nextInt();
 
                 //check if patient exists already in the blockchain
@@ -133,9 +133,6 @@ public class Clinic {
         simulator.getBlockchain().viewBlockchain();
     }
 
-    public String getClinicID() {
-        return clinicID;
-    }
 
     public void clinicFN(){
 
@@ -186,7 +183,7 @@ public class Clinic {
 
                 for (int i = 0; i < medications1.length; i++) {
                     medicationsItems = medications[i].split(",");
-                    Medication med = new Medication(Integer.parseInt(medicationsItems[0]), Integer.parseInt(medicationsItems[1]));
+                    Medication med = new Medication(medicationsItems[0], Integer.parseInt(medicationsItems[1]));
                     medications1[i] = med;
                 }
 

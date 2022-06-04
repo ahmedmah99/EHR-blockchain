@@ -24,8 +24,8 @@ public class Simulator {
 
     public Simulator(){
         existingClinics = new Hashtable<>();
-        //clinicsInit();
-        clinics();
+        clinicsInit();    //get the clinics registered in the system
+        //clinics();          //initialize/add new clinics to the system
     }
 
     public void run() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {

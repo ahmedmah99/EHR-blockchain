@@ -11,16 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RepositoryFNs {
-    public static void main(String[] args){
-
-
-    }
 
     /**
      * insert private and publinc keys into the collectionName
-     * @param collectionName
-     * @param privateKey
-     * @param PublicKey
+     * @param collectionName the collection name
+     * @param privateKey the private key of the clinic
+     * @param PublicKey the public key of the clinic
      */
     public static String insertClinic(String collectionName, String privateKey,String PublicKey,
                                       String clinicSymetricKey, String password){
@@ -39,6 +35,11 @@ public class RepositoryFNs {
 
     }
 
+
+    /**
+     * get the blocks of the blockchain at the start of the application
+     * @return an itertable of documents (one document represent on block)
+     */
     public static FindIterable<Document> getBlockChain(){
         MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
@@ -49,20 +50,11 @@ public class RepositoryFNs {
     }
 
 
-    public static String getPrevHash(){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
-        MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
-//        db.createCollection(collectionName);
-        MongoCollection<Document> col = db.getCollection("Blocks");
-        ArrayList<Document> temp = col.find().skip((int)col.countDocuments() - 1).into(new ArrayList<Document>());
-
-        return temp.get(0).getString("prevHash");
-    }
-    public static void insertcol(String colName){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
-        MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
-        db.createCollection(colName);
-    }
+    /**
+     * return a hashmap of the private and public keys of a clinic
+     * @param clinicID is the clinic to get its info
+     * @return public key and private key of that clinic
+     */
     public static HashMap<String,String> getCAClinicKeys(String clinicID){
         MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
@@ -135,31 +127,17 @@ public class RepositoryFNs {
         try {
             Document filter = new Document("_id", new ObjectId(clinicID)).append("password",password);
             Document d = col.find(filter).first();
+
+            if(d==null)
+                System.out.println("WRONG ID OR PASSWORD");
+
             return d!=null;
         }
 
         catch (Exception e){
-            System.out.print(" , Invalid Credentials, Wrong ID or Password");
+            System.out.println("WRONG ID OR PASSWORD");
         }
         return false;
-    }
-
-
-    /**
-     * number of blocks in the blockchian
-     * @return
-     */
-    public static long blockCount(){
-        MongoClient mongoClient = MongoClients.create("mongodb+srv://MMKH:gawafa@cluster0.5cebb.mongodb.net/?retryWrites=true&w=majority");
-        MongoDatabase db = mongoClient.getDatabase("EHRBlockChain");
-//        db.createCollection(collectionName);
-        MongoCollection<Document> col = db.getCollection("Blocks");
-
-        long num = col.estimatedDocumentCount();
-        if(num == 0)
-            return num;
-        else
-            return num-1;
     }
 
 
