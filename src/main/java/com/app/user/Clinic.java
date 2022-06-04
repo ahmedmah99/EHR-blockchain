@@ -3,13 +3,8 @@ package com.app.user;
 import com.app.Simulator;
 import com.app.blockchain.*;
 import com.app.mongodb.RepositoryFNs;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCursor;
-import org.bson.Document;
-
 import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class Clinic {
@@ -52,7 +47,7 @@ public class Clinic {
      * execute a service
      * @param FN function name to be executed
      */
-    public void execute(int FN) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public void execute(int FN) {
 
         String fnc = functions.get(FN);
 
@@ -100,7 +95,7 @@ public class Clinic {
                 }
 
                 do {
-                    System.out.println("Visit Info?  (Oxygen #Temperture # Reason # Diagnosis # prescription(dose1,intake2;dose2,intake2) # Ref # date # LabTest # isLabTest)");
+                    System.out.println("Visit Info?  (Oxygen #Temperture # Reason # Diagnosis # prescription(dose1,intake2;dose2,intake2) # Ref # LabTest # isLabTest)");
                     sc = new Scanner(System.in);
                     String info = sc.next();
                     visitInfo = getVisitInfo(info);
@@ -169,13 +164,10 @@ public class Clinic {
         String[] v = visitInfo.split("#");
 
         VisitInfo visitInfo1 = null;
-                                                                                //2,4;4,2dx
-        //int oxygen # float temperature # Reason reason #String diagnosis #Medication[] prescription #
-        //			String referral_specialist # Date date # String labTest # boolean isLabtest
         String[] medications;
         String[] medicationsItems;
 
-        if(v.length==9) {
+        if(v.length==8) {
 
             try {
                 medications = v[4].split(";");
@@ -189,7 +181,7 @@ public class Clinic {
 
 
                     visitInfo1 = new VisitInfo(Integer.parseInt(v[0]), Float.parseFloat(v[1]), Reason.valueOf(v[2]), v[3], medications1, v[5],
-                            new Date(), v[7], Boolean.getBoolean(v[8]));
+                            new Date(), v[6], Boolean.getBoolean(v[7]));
             }
             catch (Exception e){
                 System.out.println("Invalid Structure of the data");
@@ -201,7 +193,6 @@ public class Clinic {
 
         return visitInfo1;
     }
-
 
 
 }

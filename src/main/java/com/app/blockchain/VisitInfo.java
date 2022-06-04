@@ -1,11 +1,15 @@
 package com.app.blockchain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 public class VisitInfo {
-	
+
+
+	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	int oxygen;
 	float temperature;
 	Reason reason;
@@ -21,7 +25,7 @@ public class VisitInfo {
 	@Override
 	public String toString() {
 		return oxygen +","+ temperature + "," + reason + "," + diagnosis + "," + Arrays.toString(prescription) + ","
-				+ referral_specialist + "," + date.getTime() + "," + labTest + "," + isLabtest;
+				+ referral_specialist + "," + dateFormat.format(date) + "," + labTest + "," + isLabtest;
 	}
 	public VisitInfo(int oxygen, float temperature, Reason reason, String diagnosis, Medication[] prescription,
 			String referral_specialist, Date date, String labTest, boolean isLabtest) {
