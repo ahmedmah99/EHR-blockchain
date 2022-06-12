@@ -1,14 +1,8 @@
 package com.app.blockchain;
-
-
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
-
-import com.app.mongodb.RepositoryFNs;
-
 import java.util.logging.Level;
-
 import java.security.*;
 
 // Java program to generate
@@ -16,7 +10,6 @@ import java.security.*;
 
 
 public class Block {
-	public static final String AES = "AES";
 	public String hash;
 	public int patientID;
 	public String blockID;
@@ -30,8 +23,6 @@ public class Block {
 	public int nonce;
 	public String clinicID;
 	public String EncryptedData;
-
-	Block block;
 	    public Block(VisitInfo visitInfo, PatientInfo patientInfo, String clinicID,int patientID, String lastVisitPointer) {
 			this.visitInfo = visitInfo.toString();
 			if(patientInfo!=null)
@@ -64,7 +55,7 @@ public class Block {
 	    
 	    public String calculateBlockHash() {
 	        String dataToHash = previousHash 
-	          + Long.toString(timeStamp) 
+	          + timeStamp
 	          + Integer.toString(nonce) 
 	          + data;
 	        MessageDigest digest = null;
@@ -78,8 +69,9 @@ public class Block {
 	        } catch (NoSuchAlgorithmException ex) {
 	            logger.log(Level.SEVERE, ex.getMessage());
 	        }
-	        StringBuffer buffer = new StringBuffer();
-	        for (byte b : bytes) {
+	        StringBuilder buffer = new StringBuilder();
+			assert bytes != null;
+			for (byte b : bytes) {
 	            buffer.append(String.format("%02x", b));
 	        }
 	        return buffer.toString();

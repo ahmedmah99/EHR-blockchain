@@ -72,7 +72,7 @@ public class Clinic {
             //inset a transaction into the blockchain
             case "insertIntoBlockChain": {
 
-                VisitInfo visitInfo = null;
+                VisitInfo visitInfo;
                 PatientInfo patientInfo = null;
 
                 Scanner sc = new Scanner(System.in);
@@ -81,11 +81,11 @@ public class Clinic {
 
                 //check if patient exists already in the blockchain
 
-                String[] history = getLastVisitClinicId(id);
+                String[] history = getLastVisitClinicId(id,this.clinicID);
                 String setByClinicId = (history != null ? history[0] : null);
                 String lastVisitBlockHash = (history != null ? history[1] : null);
 
-                if (setByClinicId == null || !Objects.equals(setByClinicId,this.clinicID)) {
+                if (setByClinicId == null) {
                     do {
                         System.out.println("Patient Info?  (Name # Age # Weight # Height # Sex # Oxygen )");
                         sc = new Scanner(System.in);
@@ -95,7 +95,7 @@ public class Clinic {
                 }
 
                 do {
-                    System.out.println("Visit Info?  (Oxygen #Temperture # Reason # Diagnosis # prescription(dose1,intake2;dose2,intake2) # Ref # LabTest # isLabTest)");
+                    System.out.println("Visit Info?  (Oxygen #Temperture # Reason # Diagnosis # Prescription(Medicine,intake2;Medicine2,intake2..) # REF_DOCTOR # LabTest(YES/NO) # isLabTest(true/false))");
                     sc = new Scanner(System.in);
                     String info = sc.next();
                     visitInfo = getVisitInfo(info);
@@ -116,8 +116,8 @@ public class Clinic {
          this.simulator.getBlockchain().insertInBlockChain(block);
     }
 
-    public String[] getLastVisitClinicId(int patientID){
-        return simulator.getBlockchain().getLastVisitClinicId(patientID);
+    public String[] getLastVisitClinicId(int patientID,String clinicID){
+        return simulator.getBlockchain().getLastVisitClinicId(patientID,clinicID);
     }
 
     public void viewPatientTx(String patientID){

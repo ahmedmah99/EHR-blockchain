@@ -134,6 +134,7 @@ public class Blockchain {
 
         assert block.EncryptedData != null;
 
+
         String dataHashed = EnD.sha256(block.EncryptedData);
         String messageEnc="";
         try {
@@ -167,7 +168,7 @@ public class Blockchain {
      * @param patientID is the patientId inquired about
      * @return and array contains the clinicId and a hash of the block of the last visit
      */
-    public String[] getLastVisitClinicId(int patientID){
+    public String[] getLastVisitClinicId(int patientID,String clinicId){
 
         if(Objects.equals(lastHash, "0"))
             return null;
@@ -176,7 +177,7 @@ public class Blockchain {
         String clinicID = null;
         Block b = blockchain.get(lastHash);
         while(!(b == null)){
-            if(b.patientID == patientID) {
+            if(b.patientID == patientID && Objects.equals(b.clinicID, clinicId)) {
                 LastVisitHash = b.hash;
                 clinicID = b.clinicID;
                 break;
