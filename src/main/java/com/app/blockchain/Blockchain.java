@@ -85,10 +85,26 @@ public class Blockchain {
             //check if the two patientID matches
             if(Integer.parseInt(patientId)==b.patientID){
 
-                String data;
+                String data = "";
                 //if the clinicIDs matches, decrypt the patient Data
-                if(b.clinicID.equals(clinicID))
-                    data = EnD.AESdecrypt(b.EncryptedData,keys.get("clinicSymKey"));
+                if(b.clinicID.equals(clinicID)) {
+
+                    String decryptedDataRSA = "";
+                    try {
+                        decryptedDataRSA = EnD.rsaDecrypt(keys.get("publicKey"), b.EncryptedData);
+                    } catch (Exception e) {
+                        System.out.println("Digital Signature Failed");
+                    }
+
+                    String hashPassed = decryptedDataRSA.substring(0, 64);
+                    String dataEncrypted = decryptedDataRSA.substring(64);
+                    String hashed = EnD.sha256(dataEncrypted);
+
+                    if (hashed.equals(hashPassed))
+                        data = EnD.AESdecrypt(dataEncrypted, keys.get("clinicSymKey"));
+                    else
+                        System.out.println("Could not validate Data Integrity");
+                }
                 else
                     data = b.EncryptedData;
 
@@ -126,19 +142,20 @@ public class Blockchain {
         if(Objects.equals(lastHash, "0"))
             block.previousHash = "0";
         else
-            block.previousHash = blockchain.get(lastHash).hash;
+            block.previousHash = lastHash;
 
         HashMap<String,String> keys = RepositoryFNs.getPrivClinicKeys(block.clinicID);
+
         //Encrypt
-        block.EncryptedData = EnD.AESencrypt(block.data,keys.get("clinicSymKey"));
+        String AES_enc = EnD.AESencrypt(block.data,keys.get("clinicSymKey"));
 
-        assert block.EncryptedData != null;
+        assert AES_enc != null;
+        String dataHashed = EnD.sha256(AES_enc);
 
-
-        String dataHashed = EnD.sha256(block.EncryptedData);
         String messageEnc="";
         try {
-            messageEnc = EnD.rsaEncrypt(keys.get("privateKey"), dataHashed + block.EncryptedData);
+            messageEnc = EnD.rsaEncrypt(keys.get("privateKey"), dataHashed + AES_enc);
+            block.EncryptedData = messageEnc;
         }
         catch(Exception e){
             System.out.println(e.getMessage());
@@ -146,13 +163,19 @@ public class Blockchain {
 //
 //		check CA validation
         if(simulator.getCenterAuthority().centerAuthority(messageEnc,block.clinicID)){
+
             //mine & validate block mining
             block.mineBlock(3);
+
             if(block.verifyBlock(3)){
                 //Add to DB
                 block.blockID = RepositoryFNs.insertBlock(block);
                 blockchain.put(block.hash,block);
                 lastHash = block.hash;
+
+                System.out.println("Block Hash --> " + block.hash);
+                System.out.println("Previous Hash --> " + block.previousHash);
+                
                 System.out.println("Authorized by Center authority, The Transaction successfully added to the blockchain");
             }
             else

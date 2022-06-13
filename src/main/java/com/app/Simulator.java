@@ -121,6 +121,8 @@ public class Simulator {
         System.out.println("2 --> View a patient tx");
     }
 
+
+
     public void clinics(){
         existingClinics.put("123",new Clinic("123",this));
         existingClinics.put("a123",new Clinic("a123",this));

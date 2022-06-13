@@ -88,6 +88,7 @@ public class RepositoryFNs {
         HashMap<String,String> res= new HashMap<>();
         res.put("privateKey",d.getString("privateKey"));
         res.put("clinicSymKey",d.getString("clinicSymKey"));
+        res.put("publicKey",d.getString("publicKey"));
         return res;
     }
 

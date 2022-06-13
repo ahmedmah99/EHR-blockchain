@@ -24,8 +24,6 @@ public class CenterAuthority {
             decDataAll = EnD.rsaDecrypt(clinicKeys.get("publicKey"), encData);
 
         } catch (Exception e) {
-            System.out.println(" Encrypted Data: " + encData);
-            System.out.println("PublicKey " + clinicKeys.get("publicKey"));
             System.out.println(e.getMessage());
         }
         String hashPassed = decDataAll.substring(0, 64);
@@ -157,9 +155,25 @@ public class CenterAuthority {
             //check if the two patientID matches
             if(Integer.parseInt(patientId)==b.patientID){
 
+                String data = "";
                 String clinicId = b.clinicID;
                 HashMap<String, String> keys = RepositoryFNs.getPrivClinicKeys(clinicId);
-                String data = EnD.AESdecrypt(b.EncryptedData, keys.get("clinicSymKey"));
+                String decryptedDataRSA = "";
+
+                try {
+                    decryptedDataRSA = EnD.rsaDecrypt(keys.get("publicKey"), b.EncryptedData);
+                } catch (Exception e) {
+                    System.out.println("Digital Signature Failed");
+                }
+
+                String hashPassed = decryptedDataRSA.substring(0, 64);
+                String dataEncrypted = decryptedDataRSA.substring(64);
+                String hashed = EnD.sha256(dataEncrypted);
+
+                if (hashed.equals(hashPassed))
+                    data = EnD.AESdecrypt(dataEncrypted, keys.get("clinicSymKey"));
+                else
+                    System.out.println("Could not validate Data Integrity");
 
 
                 String[] block = {"BlockID", "Nonce", "TX", "Hash","Prev Hash"};
