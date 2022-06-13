@@ -203,8 +203,11 @@ public class Blockchain {
             if(b.patientID == patientID && Objects.equals(b.clinicID, clinicId)) {
                 LastVisitHash = b.hash;
                 clinicID = b.clinicID;
-                break;
             }
+            if(b.patientID == patientID && !Objects.equals(b.clinicID, clinicId)){
+                LastVisitHash = b.hash;
+            }
+
             b = blockchain.get(b.previousHash);
         }
         return new String[]{clinicID,LastVisitHash};
