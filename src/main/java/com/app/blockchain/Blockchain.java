@@ -193,6 +193,7 @@ public class Blockchain {
      */
     public String[] getLastVisitClinicId(int patientID,String clinicId){
 
+        boolean read = false;
         if(Objects.equals(lastHash, "0"))
             return null;
 
@@ -200,12 +201,13 @@ public class Blockchain {
         String clinicID = null;
         Block b = blockchain.get(lastHash);
         while(!(b == null)){
-            if(b.patientID == patientID && Objects.equals(b.clinicID, clinicId)) {
+            if(b.patientID == patientID && !read) {
                 LastVisitHash = b.hash;
-                clinicID = b.clinicID;
+                read=true;
             }
-            if(b.patientID == patientID && !Objects.equals(b.clinicID, clinicId)){
-                LastVisitHash = b.hash;
+            if(b.patientID == patientID && Objects.equals(b.clinicID, clinicId)) {
+                clinicID = b.clinicID;
+                break;
             }
 
             b = blockchain.get(b.previousHash);
